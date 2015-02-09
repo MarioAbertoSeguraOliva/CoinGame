@@ -14,7 +14,7 @@ import model.Coin;
 import model.Coin.Side;
 
 public class CoinDisplay extends JFrame{
-    private Coin coin;
+    private final Coin coin;
     private final JTextField textField;
     
     public CoinDisplay(Coin coin){
@@ -22,16 +22,14 @@ public class CoinDisplay extends JFrame{
         textField = createOutputInformation();
         setTitle("Coin Game");
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        setMinimumSize(new Dimension(300,300));
         setLocation(300, 300);
-        setResizable(false);
         createComponents();
-        pack();
+        setMinimumSize(new Dimension(400,400));
         setVisible(true);
     }
 
     private void createComponents() {
-        add(createImagePanel(),BorderLayout.NORTH);
+        add(createImagePanel(), BorderLayout.CENTER);
         add(createControlPanel(),BorderLayout.SOUTH);
     }
 
