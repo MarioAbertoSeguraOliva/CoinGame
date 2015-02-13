@@ -3,6 +3,7 @@ package view;
 import java.awt.BorderLayout;
 import java.awt.Dimension;
 import java.awt.Graphics;
+import java.awt.Image;
 import java.awt.event.ActionEvent;
 import java.awt.event.ComponentEvent;
 import java.awt.event.ComponentListener;
@@ -12,14 +13,23 @@ import javax.swing.JPanel;
 import javax.swing.JTextField;
 import model.Coin;
 import model.Coin.Side;
+import model.Sound;
 
 public class CoinDisplay extends JFrame{
     private final Coin coin;
     private final JTextField textField;
+    private Image image;
+    private final Sound sound;
+    private SoundPLayer soundPlayer;
     
     public CoinDisplay(Coin coin){
         this.coin=coin;
         textField = createOutputInformation();
+        image=coin.getImages()[0];
+        sound=coin.getSound();
+    }
+
+    public void display(){
         setTitle("Coin Game");
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setLocation(300, 300);
@@ -27,7 +37,7 @@ public class CoinDisplay extends JFrame{
         setMinimumSize(new Dimension(400,400));
         setVisible(true);
     }
-
+    
     private void createComponents() {
         add(createImagePanel(), BorderLayout.CENTER);
         add(createControlPanel(),BorderLayout.SOUTH);
@@ -41,7 +51,7 @@ public class CoinDisplay extends JFrame{
         @Override
             public void paint(Graphics g) {
                 super.paint(g); 
-                g.drawImage(coin.getImage(), 0, 0, getWidth(), getHeight(), null);
+                g.drawImage(image, 0, 0, getWidth(), getHeight(), null);
             }
 
             private ComponentListener createComponentListener() {
@@ -84,23 +94,18 @@ public class CoinDisplay extends JFrame{
     private JButton throwButton() {
         JButton button = new JButton("Throw Coin");
         button.addActionListener((ActionEvent e) -> {
-            update(coin, calculateNextCoinState());
+            CalculatorSides calculatorSides = new CalculatorSides();
+            update(coin, calculatorSides.calculateNextCoinState()); /*fix circular reference */
             this.textField.setText(coin.getSide().toString());
-        });
+            if(coin.getSide()==Side.Head){ image = coin.getImages()[1]; repaint();
+                                           new SoundPLayer(sound).getPlayer()[0].play();}
+            if(coin.getSide()==Side.Tail){ image = coin.getImages()[2]; repaint();
+                                           new SoundPLayer(sound).getPlayer()[1].play();}
+            });
         return button;
     }
     
     public void update(Coin coin, Side side) {
         coin.setSide(side);
-    }
-
-    private Side calculateNextCoinState() {
-        int coinState = (int) (Math.random()*50);
-        if(coinState==50){
-            return Side.Edge;
-        }else if(coinState<25){
-            return Side.Head;
-        }else
-            return Side.Tail;
     }
 }

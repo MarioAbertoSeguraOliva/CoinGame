@@ -11,6 +11,7 @@ public class ThrowCoinOperation {
     }
     
     public void execute(){
-        new CoinDisplay(coin);
+        CoinDisplay displayer = new CoinDisplay(coin);
+        displayer.display();
     }
 }
